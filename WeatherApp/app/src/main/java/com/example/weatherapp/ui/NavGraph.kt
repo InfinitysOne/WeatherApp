@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.weatherapp.ui.WeatherScreen
-import com.example.weatherapp.ui.FavoritesScreen
+import com.example.weatherapp.ui.screens.FavoritesScreen
+import com.example.weatherapp.ui.screens.WeatherScreen
 
 sealed class Screen(val route: String) {
     object Weather : Screen("weather")
@@ -28,12 +28,13 @@ fun WeatherNavGraph(
             )
         }
         composable(route = Screen.Favorites.route) {
-            FavoritesScreen(onLocationSelected = { location ->
-                navController.popBackStack()
-            },
-            onBackClick = {
-                navController.popBackStack()
-            })
+            FavoritesScreen(
+                onLocationSelected = { location ->
+                    navController.popBackStack()
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                })
         }
     }
 }
