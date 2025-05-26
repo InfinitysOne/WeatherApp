@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.data.db.FavoriteLocation
 import com.example.weatherapp.data.model.WeatherResponse
 import com.example.weatherapp.datastore.SettingsDataStore
 import com.example.weatherapp.repository.WeatherRepository
@@ -31,6 +32,9 @@ class WeatherViewModel @Inject constructor(
         initialValue = "metric"
     )
 
+    val favorites: StateFlow<List<FavoriteLocation>> =
+        repository.getFavoriteLocations().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     fun fetchWeather(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
@@ -52,6 +56,24 @@ class WeatherViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("WeatherVM", "Location error: ${e.localizedMessage}")
             }
+        }
+    }
+
+    fun addToFavorites() {
+        val weather = weather.value ?: return
+        val favorite = FavoriteLocation(
+            name = weather.name,
+            lat = weather.coord.lat,
+            lon = weather.coord.lon
+        )
+        viewModelScope.launch {
+            repository.addFavorite(favorite)
+        }
+    }
+
+    fun toggleUnit() {
+        viewModelScope.launch {
+            settings.toggleUnit(unit.value)
         }
     }
 

@@ -132,7 +132,7 @@ private fun CardBackground(
                     0.5f to ColorGradient2,
                     1f to ColorGradient3
                 ),
-                shape = RoundedCornerShape(32.dp)
+                shape = RoundedCornerShape(45.dp)
             )
     )
 }

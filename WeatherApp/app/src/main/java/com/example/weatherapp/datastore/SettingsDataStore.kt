@@ -27,4 +27,10 @@ class SettingsDataStore @Inject constructor(@ApplicationContext private val cont
         .map { preferences ->
             preferences[UNIT_KEY] ?: "metric"
         }
+
+    suspend fun toggleUnit(current: String) {
+        val newUnit = if (current == "metric") "imperial" else "metric"
+        saveUnit(newUnit)
+    }
+
 }

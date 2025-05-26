@@ -39,11 +39,14 @@ fun Context.findActivity(): Activity = when (this) {
 
 @Composable
 fun WeatherScreen(
-    viewModel: WeatherViewModel = hiltViewModel()
+    viewModel: WeatherViewModel = hiltViewModel(),
+    onFavoritesClick: () -> Unit
 ) {
     val context = LocalContext.current
     val weather by viewModel.weather.collectAsState()
     val unit by viewModel.unit.collectAsState()
+    val favorites by viewModel.favorites.collectAsState()
+    val isFavorited = favorites.any { it.name == weather?.name }
 
     // TEMP location hardcoded for now (Rome)
     LaunchedEffect(Unit) {
@@ -70,10 +73,17 @@ fun WeatherScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(paddings)
-                .padding(horizontal = 24.dp, vertical = 10.dp)
+                .padding(horizontal = 24.dp, vertical = 15.dp)
         ) {
-            ActionBar(location = weather?.name ?: "...")
-            Spacer(modifier = Modifier.height(12.dp))
+
+            ActionBar(
+                location = weather?.name ?: "...",
+                onFavoritesClick = onFavoritesClick,
+                isFavorited = isFavorited,
+                onToggleUnit = {viewModel.toggleUnit()},
+                currentUnit = unit
+            )
+            Spacer(modifier = Modifier.height(50.dp))
             Log.d("ComposeDebug", "Rendering forecast for: ${weather?.name}, temp: ${weather?.main?.temp}")
             DailyForecast(
                 degree = weather?.main?.temp?.toInt()?.toString() ?: "--",
@@ -81,7 +91,7 @@ fun WeatherScreen(
                     ?: "Loading...",
                 wind = "${weather?.wind?.speed ?: "--"} m/s"
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

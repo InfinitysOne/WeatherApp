@@ -2,7 +2,6 @@ package com.example.weatherapp.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,17 +9,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -31,7 +35,6 @@ import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.ColorGradient1
 import com.example.weatherapp.ui.theme.ColorGradient2
 import com.example.weatherapp.ui.theme.ColorGradient3
-import com.example.weatherapp.ui.theme.ColorImageShadow
 import com.example.weatherapp.ui.theme.ColorSurface
 import com.example.weatherapp.ui.theme.ColorTextPrimary
 import com.example.weatherapp.ui.theme.ColorTextSecondary
@@ -39,27 +42,41 @@ import com.example.weatherapp.ui.theme.ColorTextSecondary
 @Composable
 fun ActionBar(
     modifier: Modifier = Modifier,
-    location: String
+    location: String,
+    onFavoritesClick: () -> Unit,
+    isFavorited: Boolean,
+    onToggleUnit: () -> Unit,
+    currentUnit: String,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.SpaceBetween
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 96.dp)
+            .padding(horizontal = 30.dp, vertical = 12.dp)
     ) {
-        ControlButton()
-        LocationInfo(
-            modifier = Modifier.padding(top = 10.dp),
-            location = location
-        )
-        ProfileButton()
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            ControlButton(onClick = onFavoritesClick, isFavorited = isFavorited)
+            LocationInfo(
+                modifier = Modifier.padding(top = 10.dp),
+                location = location
+            )
+            IconButton(onClick = onToggleUnit, modifier = modifier.size(48.dp)) {
+                Text(text = if (currentUnit == "metric") "°C" else "°F",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(4.dp))
+            }
+        }
     }
 }
 
 @Composable
-private fun ControlButton(
-    modifier: Modifier = Modifier
-) {
+fun ControlButton(onClick: () -> Unit, modifier: Modifier = Modifier, isFavorited: Boolean) {
     Surface(
+        onClick = onClick,
         color = ColorSurface,
         shape = CircleShape,
         modifier = modifier
@@ -76,44 +93,15 @@ private fun ControlButton(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_control),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
+            Icon(
+                imageVector = if (isFavorited) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                contentDescription = "Favorites",
+                modifier = Modifier.size(24.dp)
             )
         }
     }
 }
 
-@Composable
-private fun ProfileButton(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .border(
-                width = 1.5.dp,
-                color = ColorSurface,
-                shape = CircleShape
-            )
-            .customShadow(
-                color = ColorImageShadow,
-                alpha = 0.7f,
-                shadowRadius = 12.dp,
-                borderRadius = 48.dp,
-                offsetY = 6.dp
-            )
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_profile),
-            contentDescription = null,
-            modifier = modifier
-                .fillMaxSize()
-                .clip(CircleShape)
-        )
-    }
-}
 
 @Composable
 private fun LocationInfo(
