@@ -1,5 +1,11 @@
 package com.example.weatherapp.ui
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.pm.PackageManager
+import android.util.Log
 import com.example.weatherapp.ui.components.ActionBar
 import com.example.weatherapp.ui.components.DailyForecast
 import androidx.compose.foundation.layout.Column
@@ -10,13 +16,51 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weatherapp.ui.theme.ColorBackground
+import com.example.weatherapp.ui.viewmodel.WeatherViewModel
+import androidx.compose.runtime.getValue
+
+
+fun Context.findActivity(): Activity = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> throw IllegalStateException("Context is not an Activity")
+}
 
 @Composable
-fun WeatherScreen() {
+fun WeatherScreen(
+    viewModel: WeatherViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    val weather by viewModel.weather.collectAsState()
+    val unit by viewModel.unit.collectAsState()
+
+    // TEMP location hardcoded for now (Rome)
+    LaunchedEffect(Unit) {
+        val permission = Manifest.permission.ACCESS_FINE_LOCATION
+        val permissionResult = ContextCompat.checkSelfPermission(context, permission)
+
+        if (permissionResult == PackageManager.PERMISSION_GRANTED) {
+            viewModel.fetchWeatherByCurrentLocation(context)
+        } else {
+            ActivityCompat.requestPermissions(
+                context.findActivity(),
+                arrayOf(permission),
+                1001
+            )
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = ColorBackground
@@ -28,14 +72,16 @@ fun WeatherScreen() {
                 .padding(paddings)
                 .padding(horizontal = 24.dp, vertical = 10.dp)
         ) {
-            ActionBar()
-            Spacer(
-                modifier = Modifier.height(12.dp)
+            ActionBar(location = weather?.name ?: "...")
+            Spacer(modifier = Modifier.height(12.dp))
+            Log.d("ComposeDebug", "Rendering forecast for: ${weather?.name}, temp: ${weather?.main?.temp}")
+            DailyForecast(
+                degree = weather?.main?.temp?.toInt()?.toString() ?: "--",
+                description = weather?.weather?.firstOrNull()?.description?.replaceFirstChar { it.uppercase() }
+                    ?: "Loading...",
+                wind = "${weather?.wind?.speed ?: "--"} m/s"
             )
-            DailyForecast()
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

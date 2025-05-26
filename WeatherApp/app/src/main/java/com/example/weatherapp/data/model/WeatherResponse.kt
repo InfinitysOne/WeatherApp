@@ -1,7 +1,7 @@
 package com.example.weatherapp.data.model
 
 data class WeatherResponse (
-    val cityName: String,
+    val name: String,
     val main: Main,
     val weather: List<Weather>,
     val wind: Wind

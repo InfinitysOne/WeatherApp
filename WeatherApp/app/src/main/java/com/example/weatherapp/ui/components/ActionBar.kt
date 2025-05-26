@@ -1,14 +1,5 @@
 package com.example.weatherapp.ui.components
 
-import com.example.weatherapp.R
-import com.example.weatherapp.ui.components.customShadow
-import com.example.weatherapp.ui.theme.ColorGradient1
-import com.example.weatherapp.ui.theme.ColorGradient2
-import com.example.weatherapp.ui.theme.ColorGradient3
-import com.example.weatherapp.ui.theme.ColorImageShadow
-import com.example.weatherapp.ui.theme.ColorSurface
-import com.example.weatherapp.ui.theme.ColorTextPrimary
-import com.example.weatherapp.ui.theme.ColorTextSecondary
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,10 +27,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.R
+import com.example.weatherapp.ui.theme.ColorGradient1
+import com.example.weatherapp.ui.theme.ColorGradient2
+import com.example.weatherapp.ui.theme.ColorGradient3
+import com.example.weatherapp.ui.theme.ColorImageShadow
+import com.example.weatherapp.ui.theme.ColorSurface
+import com.example.weatherapp.ui.theme.ColorTextPrimary
+import com.example.weatherapp.ui.theme.ColorTextSecondary
 
 @Composable
 fun ActionBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    location: String
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -49,7 +49,7 @@ fun ActionBar(
         ControlButton()
         LocationInfo(
             modifier = Modifier.padding(top = 10.dp),
-            location = "Rome"
+            location = location
         )
         ProfileButton()
     }

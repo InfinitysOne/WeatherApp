@@ -1,12 +1,5 @@
 package com.example.weatherapp.ui.components
 
-import com.example.weatherapp.R
-import com.example.weatherapp.ui.theme.ColorGradient1
-import com.example.weatherapp.ui.theme.ColorGradient2
-import com.example.weatherapp.ui.theme.ColorGradient3
-import com.example.weatherapp.ui.theme.ColorTextSecondary
-import com.example.weatherapp.ui.theme.ColorTextSecondaryVariant
-import com.example.weatherapp.ui.theme.ColorWindForecast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,17 +26,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.example.weatherapp.R
+import com.example.weatherapp.data.model.Wind
+import com.example.weatherapp.ui.theme.ColorGradient1
+import com.example.weatherapp.ui.theme.ColorGradient2
+import com.example.weatherapp.ui.theme.ColorGradient3
+import com.example.weatherapp.ui.theme.ColorTextSecondary
+import com.example.weatherapp.ui.theme.ColorTextSecondaryVariant
+import com.example.weatherapp.ui.theme.ColorWindForecast
 
 @Composable
 fun DailyForecast(
     modifier: Modifier = Modifier,
-    forecast: String = "Rain showers",
-    date: String = "Monday, 12 Feb"
+    degree: String,
+    description: String,
+    wind: String,
+    date: String = "Monday"
+
 ) {
     ConstraintLayout(
         modifier = modifier.fillMaxWidth()
     ) {
-        val (forecastImage, forecastValue, windImage, title, description, background) = createRefs()
+        val (forecastImage, forecastValue, windImage, title, descriptionText, background) = createRefs()
 
         CardBackground(
             modifier = Modifier.constrainAs(background) {
@@ -51,7 +55,7 @@ fun DailyForecast(
                     start = parent.start,
                     end = parent.end,
                     top = parent.top,
-                    bottom = description.bottom,
+                    bottom = descriptionText.bottom,
                     topMargin = 24.dp
                 )
                 height = Dimension.fillToConstraints
@@ -71,7 +75,7 @@ fun DailyForecast(
         )
 
         Text(
-            text = forecast,
+            text = date,
             style = MaterialTheme.typography.titleLarge,
             color = ColorTextSecondary,
             fontWeight = FontWeight.Medium,
@@ -86,7 +90,7 @@ fun DailyForecast(
             style = MaterialTheme.typography.bodyMedium,
             color = ColorTextSecondaryVariant,
             modifier = Modifier
-                .constrainAs(description) {
+                .constrainAs(descriptionText) {
                     start.linkTo(anchor = title.start)
                     top.linkTo(anchor = title.bottom)
                 }
@@ -94,6 +98,8 @@ fun DailyForecast(
         )
 
         ForecastValue(
+            degree = degree,
+            description = description,
             modifier = Modifier.constrainAs(forecastValue) {
                 end.linkTo(anchor = parent.end, margin = 24.dp)
                 top.linkTo(forecastImage.top)
